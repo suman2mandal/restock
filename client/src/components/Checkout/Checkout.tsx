@@ -6,9 +6,12 @@ import { useForm } from "react-hook-form";
 import React, { useEffect, useState } from "react";
 import {
   selectLoggedInUser,
-  updateUserAsync,
-  // updateUserAsync,
+
 } from "@/lib/features/Auth/authSlice";
+import {
+  updateUserAsync,
+  selectUserInfo,
+} from "@/lib/features/RoleWise/userSlice";
 import {
   deleteItemFromCartAsync,
   selectItems,
@@ -25,6 +28,7 @@ import {
   createOrderAsync,
   selectCurrentOrder,
 } from "@/lib/features/Order/orderSlice";
+import {discountedPrice} from "@/lib/constant/constants";
 
 
 function Checkout() {
@@ -38,10 +42,10 @@ function Checkout() {
 
   const currentOrder = useSelector(selectCurrentOrder);
 
-  const user = useSelector(selectLoggedInUser);
+  const user = useSelector(selectUserInfo);
   const items = useSelector(selectItems);
   const totalAmount = items.reduce(
-    (amount: number, item: any) => item.price * item.quantity + amount,
+    (amount: number, item: any) => discountedPrice(item.product) * item.quantity + amount,
     0,
   );
 
@@ -54,7 +58,7 @@ function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const router = useRouter();
   const handleQuantity = (e: any, item: any) => {
-    dispatch(updateCartAsync({ ...item, quantity: +e.target.value }));
+    dispatch(updateCartAsync({ id:item.id, quantity: +e.target.value }));
   };
 
   const handleRemove = (e: any, id: any) => {
@@ -83,10 +87,10 @@ function Checkout() {
       items,
       totalAmount,
       totalItems,
-      user,
+      user: user.id,
       paymentMethod,
       selectedAddress,
-      status: "pending",
+      status: 'pending',
     };
 
     dispatch(createOrderAsync(order));
@@ -305,8 +309,8 @@ function Checkout() {
                   </p>
                   <ul >
                     {user &&
-                      //@ts-ignore
-                      user.addresses.map((address: any, index: any) => (
+                        user.addresses &&
+                      user?.addresses.map((address: any, index: any) => (
                         <li
                           key={index}
                           className="mb-4 flex justify-between gap-x-6 px-5 py-5 border-solid border dark:border-gray-200/25 border-gray-900/25 rounded-md"
@@ -408,8 +412,8 @@ function Checkout() {
                         <li key={item.id} className="flex py-6">
                           <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                             <Image
-                              src={item.thumbnail}
-                              alt={item.title}
+                              src={item.product.thumbnail}
+                              alt={item.product.title}
                               className="h-full w-full object-cover object-center"
                               height={100}
                               width={100}
@@ -420,12 +424,12 @@ function Checkout() {
                             <div>
                               <div className="flex justify-between text-base font-medium leading-6 text-gray-900 dark:text-gray-200">
                                 <h3>
-                                  <a href={item.href}>{item.title}</a>
+                                  <a href={item.href}>{item.product.title}</a>
                                 </h3>
-                                <p className="ml-4">₹{item.price}</p>
+                                <p className="ml-4">₹{item.product.price}</p>
                               </div>
                               <p className="mt-1 text-sm text-gray-500">
-                                {item.brand}
+                                {item.product.brand}
                               </p>
                             </div>
                             <div className="flex flex-1 items-end justify-between text-sm">
@@ -447,6 +451,7 @@ function Checkout() {
                                   <option value="4">4</option>
                                   <option value="5">5</option>
                                 </select>
+
                               </div>
 
                               <div className="flex item-center flex-row">

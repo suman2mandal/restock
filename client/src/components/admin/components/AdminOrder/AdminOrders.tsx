@@ -144,19 +144,19 @@ function AdminOrders() {
                       </div>
                     </td>
                     <td className="py-3 px-6 text-left">
-                      {order.items.map((item, index) => (
+                      {order.items.map((item:any, index) => (
                         <div key={index} className="flex items-center">
                           <div className="mr-2">
                             <Image
                               className="w-6 h-6 rounded-full"
-                              src={item?.thumbnail}
-                              alt="Thumbnail"
+                              src={item.product.thumbnail}
+                              alt={item.product.title}
                               width={50}
                               height={50}
                             />
                           </div>
                           <span>
-                            {item?.title} - #{item?.quantity} - $
+                           {item.product.title} - #{item.product.quantity} - ₹
                             {discountedPrice(item)}
                           </span>
                         </div>
@@ -164,7 +164,7 @@ function AdminOrders() {
                     </td>
                     <td className="py-3 px-6 text-center">
                       <div className="flex items-center justify-center">
-                        ${order?.totalAmount}
+                        ₹{order?.totalAmount}
                       </div>
                     </td>
                     <td className="py-3 px-6 text-center">

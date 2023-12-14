@@ -10,6 +10,7 @@ import {corsUrl} from "./config.js";
 import dotenv from "dotenv";
 import helmet from "helmet";
 
+
 //Importing the widgets
 import moment from "moment-timezone";
 import { nanoid } from 'nanoid';
@@ -22,6 +23,11 @@ import globalErrorHandler from './utils/globalErrorHandler.js';
 import ProductRouter from "./routes/products/product.routes.js"
 import BrandRouter from "./routes/brands/brand.routes.js"
 import CategoryRouter from "./routes/category/category.routes.js"
+import UserRouter from "./routes/user/user.routes.js"
+import AuthRouter from "./routes/auth/auth.routes.js"
+import CartRouter from "./routes/cart/cart.routes.js"
+import OrderRouter from "./routes/order/order.routes.js"
+import BannerRouter from "./routes/banner/banner.routes.js"
 
 
 /*❗~~~~CONFIG~~~~❗*/
@@ -34,6 +40,14 @@ dotenv.config();
 
 // Initializing express app - This is the app object that will be used throughout the app
 const app: Application = express();
+
+
+// Middleware for handling CORS - This will handle CORS errors
+app.use(cors({
+    origin: corsUrl,
+    optionsSuccessStatus: 200,
+    exposedHeaders: ['X-Total-Count']
+}));
 
 // Middleware for parsing JSON - This will parse incoming requests with JSON payloads
 app.use(express.json());
@@ -71,8 +85,6 @@ app.use(morgan(':id :origin :remote-addr :method :url :status :response-time ms 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
-// Middleware for handling CORS - This will handle CORS errors
-app.use(cors({origin: corsUrl, optionsSuccessStatus: 200}));
 
 
 
@@ -92,7 +104,16 @@ app.use("/api/v1/products", ProductRouter)
 //Brand routes
 app.use("/api/v1/brands", BrandRouter)
 //Category routes
-app.use("/api/v1/category", CategoryRouter)
+app.use("/api/v1/categories", CategoryRouter)
+//User routes
+app.use("/api/v1/users", UserRouter)
+//Auth routes
+app.use("/api/v1/auth", AuthRouter)
+//Cart routes
+app.use("/api/v1/cart", CartRouter)
+//Order routes
+app.use("/api/v1/orders", OrderRouter)
+app.use("/api/v1/banner", BannerRouter)
 
 
 // Default route for the API - This will be used to test if the API is live

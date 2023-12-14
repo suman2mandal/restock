@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 
 import { AuthState, User } from "@/lib/types/Auth/auth.type";
 import { updateUser } from "@/lib/api/RoleWiseFetch/userAPI";
@@ -19,20 +19,18 @@ export const createUserAsync = createAsyncThunk(
 );
 
 export const checkUserAsync = createAsyncThunk(
-  "auth/checkUser",
-  async (loginInfo: { email: string; password: string }) => {
-    const response = await checkUser(loginInfo);
-    return response.data as User;
-  },
+    "auth/checkUser",
+    async (loginInfo: { email: string; password: string },{rejectWithValue}) => {
+      try {
+        const response = await checkUser(loginInfo);
+        return response.data as User
+      } catch (error: any) {
+        console.log(error);
+        return rejectWithValue(error);
+      }
+    }
 );
 
-export const updateUserAsync = createAsyncThunk(
-  "user/updateUser",
-  async (update: User) => {
-    const response = await updateUser(update);
-    return response.data as User;
-  },
-);
 
 export const signOutAsync = createAsyncThunk(
   "user/signOut",
@@ -67,15 +65,9 @@ export const authSlice = createSlice({
       })
       .addCase(checkUserAsync.rejected, (state, action) => {
         state.status = "idle";
-        state.error = action.error.message || "An error occurred.";
+        state.error = action.payload;
       })
-      .addCase(updateUserAsync.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(updateUserAsync.fulfilled, (state, action) => {
-        state.status = "idle";
-        state.loggedInUser = action.payload;
-      })
+
       .addCase(signOutAsync.pending, (state) => {
         state.status = "loading";
       })

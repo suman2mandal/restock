@@ -90,9 +90,17 @@ class ProductNotFoundError extends Error {
 //Functions
 export const fetchProduct = catchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
     try {
+        let condition:any = {}
+        if(!req.query.admin){
+            condition.deleted = {$ne:true}
+        }
+
         // Initialize the query without executing it
-        let query = Product.find({});
-        let totalProductsQuery = Product.find({});
+        //Purpose: Deleted false products won't show up on the frontend
+        let query = Product.find(condition);
+
+        //same deleted false purpose for pagination
+        let totalProductsQuery = Product.find(condition);
 
 
         //Filtering the products based on the query parameters
@@ -139,7 +147,7 @@ export const fetchProduct = catchAsyncError(async (req: Request, res: Response, 
         const docs = await query.exec();
 
         //We need it x-total-count for pagination in the frontend because we need to know the total number of products
-        res.set('X_Total-Count', totalDocs.toString());
+        res.set('X-Total-Count', totalDocs.toString());
 
         //Addition check to see if the product array is empty
         if (docs.length === 0) {
@@ -175,7 +183,7 @@ class ProductNotFoundError2 extends Error {
 //Fetching a single product
 export const fetchProductById = catchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { id } = req.params;
+        const {id} = req.params;
 
         const product = await Product.findById(id);
 
@@ -186,11 +194,53 @@ export const fetchProductById = catchAsyncError(async (req: Request, res: Respon
         res.status(200).json(product);
     } catch (error) {
         if (error instanceof ProductNotFoundError2) {
-            res.status(error.statusCode).json({ message: error.message });
+            res.status(error.statusCode).json({message: error.message});
         } else {
             next(error);
         }
     }
 });
 
+
+/* UPDATE PRODUCT */
+
+// Helper function to check if ID is a valid ObjectId
+function isValidObjectId(id: string): boolean {
+    // Use your preferred method to validate ObjectId (e.g., using mongoose.Types.ObjectId.isValid)
+    // For example:
+    // return mongoose.Types.ObjectId.isValid(id);
+    return /^[0-9a-fA-F]{24}$/.test(id); // Simplified check (24-character hex string)
+}
+
+export const updateProduct = catchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // Get the ID from the request parameters
+        const {id} = req.params;
+
+        // Check if the provided ID is valid
+        if (!id || !isValidObjectId(id)) {
+            return next(new ErrorHandler('Invalid product ID', 400));
+        }
+
+        const updatedProduct = await Product.findByIdAndUpdate(id, req.body, {new: true});
+
+        if (!updatedProduct) {
+            return next(new ErrorHandler('Product not found', 404));
+        }
+
+        // Calculate discountPrice if necessary
+        if ('price' in req.body || 'discountPercentage' in req.body) {
+            updatedProduct.discountPrice = Math.round(updatedProduct.price * (1 - (updatedProduct.discountPercentage || 0) / 100));
+            await updatedProduct.save();
+        }
+
+        res.status(200).json(updatedProduct);
+    } catch (error) {
+        if (error.name === 'CastError') {
+            return next(new ErrorHandler('Invalid product ID', 400));
+        } else {
+            next(new ErrorHandler('Internal server error', 500));
+        }
+    }
+});
 

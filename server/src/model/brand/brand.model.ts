@@ -1,7 +1,7 @@
 import mongoose, {Schema, Model, model} from 'mongoose';
 import {IBrand} from "../../types/brand/brand.js";
 
-const CategorySchema: Schema = new mongoose.Schema<IBrand>({
+const BrandSchema: Schema = new mongoose.Schema<IBrand>({
     label: {
         type: String,
         required: true,
@@ -17,7 +17,7 @@ const CategorySchema: Schema = new mongoose.Schema<IBrand>({
 //Create a virtual data field for id to replace the _id field in the output
 //Purpose: The _id field is an internal field of MongoDB and is not suitable for external use.
 //In our Frontend, we will use the id field instead of the _id field.
-const virtualId = CategorySchema.virtual('id');
+const virtualId = BrandSchema.virtual('id');
 virtualId.get(function () {
 
     return this._id;
@@ -25,7 +25,7 @@ virtualId.get(function () {
 })
 
 // Set the schema options to enable the virtual fields and remove unwanted properties when converting a document to JSON
-CategorySchema.set('toJSON', {
+BrandSchema.set('toJSON', {
 
     virtuals: true,// enable virtual fields
 
@@ -37,6 +37,6 @@ CategorySchema.set('toJSON', {
     }
 })
 
-const Brand: Model<IBrand> = model<IBrand>("Brand", CategorySchema);
+const Brand: Model<IBrand> = model<IBrand>("Brand", BrandSchema);
 
 export default Brand;

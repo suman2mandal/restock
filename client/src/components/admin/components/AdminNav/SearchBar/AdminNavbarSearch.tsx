@@ -7,7 +7,7 @@ import {
   fetchProductsByFiltersAsync,
   selectBrands,
   selectCategories,
-} from "@/lib/features/Product/productListSlice";
+} from "@/lib/features/Product/fetchProductsByFiltersAsync";
 import { useRouter } from "next/navigation";
 import Context from "@/lib/context/Context";
 import { ITEMS_PER_PAGE } from "@/lib/constant/constants";
@@ -24,7 +24,7 @@ interface SortOption {
   [key: string]: any;
 }
 
-export const NavbarSearch = ({ items }: any) => {
+export const AdminNavbarSearch = ({ items }: any) => {
   const dispatch: AppDispatch = useDispatch();
   const [page, setPage] = useState(1);
   const [filter, setFilter] = useState<Filter>({});
@@ -58,18 +58,6 @@ export const NavbarSearch = ({ items }: any) => {
   const brands = useSelector(selectBrands);
   const categories = useSelector(selectCategories);
 
-  // const filters = [
-  //     {
-  //         id: "category",
-  //         name: "Category",
-  //         options: categories,
-  //     },
-  //     {
-  //         id: "brand",
-  //         name: "Brands",
-  //         options: brands,
-  //     },
-  // ];
 
   useEffect(() => {
     // This will be executed after the initial render
@@ -127,7 +115,6 @@ export const NavbarSearch = ({ items }: any) => {
 
   const handleKeyDown = (e: any) => {
     if (e.key === "Enter") {
-      // Perform the action you want here
       // @ts-ignore
       console.log("select catagory...........", latestArray[0].category);
       // setFilter(newFilter);
@@ -136,9 +123,9 @@ export const NavbarSearch = ({ items }: any) => {
       let filter = { category: [latestArray[0].category] };
       router.push("/admin/");
 
-      dispatch(fetchProductsByFiltersAsync({ filter, sort, pagination }));
-      dispatch(fetchProductsByFiltersAsync({ filter, sort, pagination }));
-      dispatch(fetchProductsByFiltersAsync({ filter, sort, pagination }));
+      dispatch(fetchProductsByFiltersAsync({ filter, sort, pagination ,admin:true}));
+      dispatch(fetchProductsByFiltersAsync({ filter, sort, pagination ,admin:true}));
+      dispatch(fetchProductsByFiltersAsync({ filter, sort, pagination ,admin:true}));
     }
   };
 
@@ -146,7 +133,7 @@ export const NavbarSearch = ({ items }: any) => {
     <div className="flex justify-center items-center">
       <>
         <div className="group inline-block text-black dark:text-white">
-          <button className="outline-none dark:bg-[#2a2a2b] py-2.5 mb-0.5 rounded-l-full focus:outline-none border px-3 bg-white rounded-sm flex items-center min-w-32">
+          <button className=" dark:bg-[#2a2a2b] py-2.5 mb-0.5 rounded-l-full px-3 bg-white rounded-sm flex items-center min-w-32">
             <span className="pr-1 dark:bg-[#2a2a2b] font-semibold flex-1">
               Items
             </span>
@@ -162,8 +149,8 @@ export const NavbarSearch = ({ items }: any) => {
             </span>
           </button>
           <ul
-            className="bg-white border rounded-sm transform scale-0 group-hover:scale-100 absolute
-  transition duration-150 ease-in-out origin-top min-w-32 "
+            className="ransform scale-0 group-hover:scale-100 absolute text-start
+  transition duration-150 ease-in-out origin-top min-w-32 rounded-2xl dark:bg-gray-500/50 bg-gray-800/25 py-2 bg-white dark:bg-[#2a2a2b] px-0.5"
           >
             {categories?.map((category: any, index: any) => (
               <li
@@ -175,10 +162,10 @@ export const NavbarSearch = ({ items }: any) => {
                   let filter = { category: [e.target.textContent] };
                   router.push("/admin/");
                   dispatch(
-                    fetchProductsByFiltersAsync({ filter, sort, pagination }),
+                    fetchProductsByFiltersAsync({ filter, sort, pagination ,admin:true }),
                   );
                   dispatch(
-                    fetchProductsByFiltersAsync({ filter, sort, pagination }),
+                    fetchProductsByFiltersAsync({ filter, sort, pagination ,admin:true}),
                   );
                 }}
               >
@@ -200,11 +187,6 @@ export const NavbarSearch = ({ items }: any) => {
               formatResult={formatResult}
               placeholder={"Search here..."}
               maxResults={5}
-              // autoFocus={true}
-              // showNoResultsText={"HI"}
-              // showNoResults={true}
-              // showClear={true}
-              // showItemsOnFocus={false}
               className="focus:outline-none text-white testing_search_bar"
               styling={{
                 height: "44px",
@@ -234,4 +216,4 @@ export const NavbarSearch = ({ items }: any) => {
   );
 };
 
-export default NavbarSearch;
+export default AdminNavbarSearch;

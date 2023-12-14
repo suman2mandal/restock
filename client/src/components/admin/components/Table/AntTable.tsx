@@ -3,7 +3,7 @@ import React, { useContext, useState } from "react";
 import { ConfigProvider, Space, Table, theme } from "antd";
 import type { ColumnsType, TableProps } from "antd/es/table";
 import { useSelector } from "react-redux";
-import { selectAllProducts_ } from "@/lib/features/Product/productListSlice";
+import { selectAllProducts_ } from "@/lib/features/Product/fetchProductsByFiltersAsync";
 import Context from "@/lib/context/Context";
 import Image from "next/image";
 import Link from "next/link";
@@ -227,8 +227,8 @@ const AntTable: React.FC = () => {
         },
       }}
     >
+      <div className="lg:mr-16">
       <BgAdminTailwindWrapper>
-        <div className="max-w-[1780px]">
           <Table
             className="border border-gray-400/25 shadow-gray-200/10 shadow-md"
             size="large"
@@ -239,8 +239,8 @@ const AntTable: React.FC = () => {
             // sticky={{ offsetHeader: 0 }}
             // scroll={{ x: 1800 }}
           />
-        </div>
       </BgAdminTailwindWrapper>
+      </div>
     </ConfigProvider>
   );
 };

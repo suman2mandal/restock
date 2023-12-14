@@ -7,7 +7,7 @@ import {
   fetchProductsByFiltersAsync,
   selectBrands,
   selectCategories,
-} from "@/lib/features/Product/productListSlice";
+} from "@/lib/features/Product/fetchProductsByFiltersAsync";
 import { useRouter } from "next/navigation";
 import Context from "@/lib/context/Context";
 import { ITEMS_PER_PAGE } from "@/lib/constant/constants";
@@ -58,50 +58,26 @@ export const NavbarSearch = ({ items }: any) => {
   const brands = useSelector(selectBrands);
   const categories = useSelector(selectCategories);
 
-  // const filters = [
-  //     {
-  //         id: "category",
-  //         name: "Category",
-  //         options: categories,
-  //     },
-  //     {
-  //         id: "brand",
-  //         name: "Brands",
-  //         options: brands,
-  //     },
-  // ];
-
   useEffect(() => {
     // This will be executed after the initial render
     setShowComponent(true);
   }, []); // Empty dependency array ensures the effect runs only once on mount
 
   const handleOnSearch = (string: any, results: any) => {
-    // console.log(string, results);
     setLatestArray(results);
   };
 
   const handleOnHover = (result: any) => {
-    // console.log(result);
     console.log(result, "hover");
   };
 
   const handleOnSelect = (item: any) => {
-    // onClick("pc-components-details/",item);
-    // window.location.href = `/pc-components-details/${item.id}`;
     router.push(`/pc-components-details/${item.id}`);
-    console.log(item, "clicken on select");
-    // console.log(item);
   };
 
   const handleOnFocus = () => {
-    console.log("Focused");
+    // console.log("Focused");
   };
-
-  // useEffect(() => {
-  //     const pagination = { _page: page, _limit: ITEMS_PER_PAGE };
-  //     dispatch(fetchProductsByFiltersAsync({ filter, sort, pagination }));
-  // }, [dispatch, filter, sort, page]);
 
   const formatResult = (item: any) => {
     if (!item) {
@@ -127,18 +103,14 @@ export const NavbarSearch = ({ items }: any) => {
 
   const handleKeyDown = (e: any) => {
     if (e.key === "Enter") {
-      // Perform the action you want here
-      // @ts-ignore
-      console.log("select catagory...........", latestArray[0].category);
-      // setFilter(newFilter);
       const pagination = { _page: page, _limit: ITEMS_PER_PAGE };
       // @ts-ignore
       let filter = { category: [latestArray[0].category] };
       router.push("/");
 
-      dispatch(fetchProductsByFiltersAsync({ filter, sort, pagination }));
-      dispatch(fetchProductsByFiltersAsync({ filter, sort, pagination }));
-      dispatch(fetchProductsByFiltersAsync({ filter, sort, pagination }));
+      dispatch(fetchProductsByFiltersAsync({ filter, sort, pagination ,admin:false}));
+      dispatch(fetchProductsByFiltersAsync({ filter, sort, pagination ,admin:false}));
+      dispatch(fetchProductsByFiltersAsync({ filter, sort, pagination ,admin:false}));
     }
   };
 
@@ -152,7 +124,7 @@ export const NavbarSearch = ({ items }: any) => {
             </span>
             <span>
               <svg
-                className="fill-current h-4 w-4 transform group-hover:-rotate-180
+                className=" fill-current h-4 w-4 transform group-hover:-rotate-180
   transition duration-150 ease-in-out"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
@@ -162,23 +134,23 @@ export const NavbarSearch = ({ items }: any) => {
             </span>
           </button>
           <ul
-            className="ransform scale-0 group-hover:scale-100 absolute
-  transition duration-150 ease-in-out origin-top min-w-32 rounded-2xl dark:bg-gray-500/50 bg-gray-800/25 p-1 "
+            className="ransform scale-0 group-hover:scale-100 absolute text-start
+  transition duration-150 ease-in-out origin-top min-w-32 rounded-2xl dark:bg-gray-500/50 bg-gray-800/25 py-2 bg-white dark:bg-[#2a2a2b] px-0.5"
           >
             {categories?.map((category: any, index: any) => (
               <li
                 key={index}
-                className="dark:bg-[#2a2a2b] bg-[#ffffff] px-3 hover:dark:bg-[#3f3f43] py-1 mt-0.5 hover:bg-gray-100 rounded-md"
+                className=" dark:bg-[#2a2a2b] px-3 hover:dark:bg-[#3f3f43] py-1 hover:bg-gray-100 "
                 onClick={(e) => {
                   const pagination = { _page: page, _limit: ITEMS_PER_PAGE };
                   // @ts-ignore
                   let filter = { category: [e.target.textContent] };
                   router.push("/");
                   dispatch(
-                    fetchProductsByFiltersAsync({ filter, sort, pagination }),
+                    fetchProductsByFiltersAsync({ filter, sort, pagination,admin:false }),
                   );
                   dispatch(
-                    fetchProductsByFiltersAsync({ filter, sort, pagination }),
+                    fetchProductsByFiltersAsync({ filter, sort, pagination ,admin:false}),
                   );
                 }}
               >
@@ -200,11 +172,6 @@ export const NavbarSearch = ({ items }: any) => {
               formatResult={formatResult}
               placeholder={"Search here..."}
               maxResults={5}
-              // autoFocus={true}
-              // showNoResultsText={"HI"}
-              // showNoResults={true}
-              // showClear={true}
-              // showItemsOnFocus={false}
               className="focus:outline-none text-white testing_search_bar"
               styling={{
                 height: "46px",
